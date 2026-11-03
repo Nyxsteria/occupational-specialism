@@ -1,0 +1,332 @@
+/* ==========================================
+   Global
+========================================== */
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #f5f7fa;
+}
+
+
+/* ==========================================
+   Header
+========================================== */
+
+.header-container {
+    position: sticky;
+    top: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 1rem 2rem;
+
+    background-color: white;
+
+    border-bottom: 1px solid #ccc;
+
+    z-index: 1000;
+}
+
+.site-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   Navigation
+========================================== */
+
+.navigator-menu ul {
+    display: flex;
+    gap: 1rem;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.nav-button {
+    background-color: #0078d4;
+    color: white;
+
+    border: none;
+    border-radius: 5px;
+
+    padding: 0.5rem 1rem;
+
+    cursor: pointer;
+
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+    background-color: #005a9e;
+}
+
+
+/* ==========================================
+   Main Layout
+========================================== */
+
+.main-content {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 40px;
+
+    padding: 40px;
+}
+
+
+/* ==========================================
+   Main Image
+========================================== */
+
+.image-container {
+    flex-shrink: 0;
+}
+
+.image-container img {
+    display: block;
+
+    width: 500px;
+    height: auto;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ==========================================
+   Cards
+========================================== */
+
+.card-container {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.card {
+    width: 350px;
+
+    padding: 20px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #0078d4;
+}
+
+.card button {
+    background-color: #0078d4;
+    color: white;
+
+    border: none;
+    border-radius: 5px;
+
+    padding: 10px 20px;
+
+    cursor: pointer;
+
+    transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+    background-color: #005a9e;
+}
+
+
+/* ==========================================
+   Popup Overlay
+========================================== */
+
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    z-index: 2000;
+}
+
+.popup-overlay[hidden] {
+    display: none;
+}
+
+
+/* ==========================================
+   Popup Card
+========================================== */
+
+.popup-card {
+    position: relative;
+
+    width: 450px;
+    max-width: 90vw;
+
+    padding: 25px;
+
+    background-color: white;
+
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+    overflow: hidden;
+}
+
+
+/* ==========================================
+   Popup Close Button
+========================================== */
+
+.popup-close {
+    position: absolute;
+
+    top: 10px;
+    right: 15px;
+
+    background: none;
+    border: none;
+
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+.popup-close:hover {
+    color: #0078d4;
+}
+
+
+/* ==========================================
+   Popup Content
+========================================== */
+
+#popup-title {
+    margin-top: 0;
+    color: #0078d4;
+}
+
+.popup-image {
+    display: block;
+
+    width: 100%;
+    height: 200px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    margin-bottom: 15px;
+}
+
+#popup-description {
+    color: #333;
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   Dynamic Actions
+========================================== */
+
+#popup-actions {
+    display: flex;
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    flex-wrap: wrap;
+}
+
+#popup-actions button {
+    background-color: #0078d4;
+    color: white;
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 10px 20px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s ease;
+}
+
+#popup-actions button:hover {
+    background-color: #005a9e;
+
+    transform: translateY(-2px);
+}
+
+#popup-actions button:active {
+    transform: translateY(0);
+}
+
+
+/* ==========================================
+   Mobile Layout
+========================================== */
+
+@media (max-width: 900px) {
+
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-container img {
+        width: 100%;
+        max-width: 500px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .popup-card {
+        width: 90vw;
+    }
+
+    .card {
+        width: auto;
+    }
+
+    #popup-actions {
+        flex-direction: column;
+    }
+
+    #popup-actions button {
+        width: 100%;
+    }
+
+}
