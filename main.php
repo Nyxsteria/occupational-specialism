@@ -2,8 +2,11 @@
 
 session_start();
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: main.html');
+if (
+    !isset($_SESSION['logged_in']) ||
+    $_SESSION['logged_in'] !== true
+) {
+    header('Location: index.html');
     exit();
 }
 
@@ -18,7 +21,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 </head>
 <body>
 
-    <h1>Welcome <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
+    <h1>Main Page</h1>
+
+    <p>Login successful.</p>
 
 </body>
 </html>
