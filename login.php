@@ -1,20 +1,33 @@
 <?php
-header("Content-Type: application/json; charset=utf8");
-echo json_encode(["message" => "Login successful"]); 
 
-    if (isset($_POST['username']) && isset($_POST['password'])) {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+header("Content-Type: application/json; charset=utf-8");
 
-        // Validate the username and password (this is just a simple example, you should implement proper validation)
-        if ($username === 'admin' && $password === 'password') {
-            echo json_encode(["message" => "Login successful"]);
-            
-        } else {
-            echo json_encode(["message" => "Invalid username or password"]);
-        }
+if (isset($_POST['username']) && isset($_POST['password'])) {
+
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+
+    if ($username === 'admin' && $password === 'password') {
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Login successful"
+        ]);
+
     } else {
-        echo json_encode(["message" => "Username and password are required"]);
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid username or password"
+        ]);
+
     }
 
-    ?>
+} else {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Username and password are required"
+    ]);
+
+}

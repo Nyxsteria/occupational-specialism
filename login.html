@@ -4,43 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login-page.css">
+    <script src="login.js" defer></script>
     <title>Login Panel</title>
-    <script>
-
-        const username='admin';
-        const password='admin';
-
-        const FormData = new URLSearchParams();
-        FormData.append('username', username);
-        FormData.append('password', password);
-
-        async function login() {
-
-            document.getElementById('login-form').addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const formElement = event.target;
-            });
-            try {
-                const response = fetch('login.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                body: FormData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Server Error: ${response.status}');
-                }
-
-                const result = await response.json();
-                console.log(result);
-
-            } catch (error) {
-                console.error('Request failed: Error:', error);
-            }
-        }
-    </script>
 </head>
 
 <body>
@@ -49,7 +14,7 @@
         <h1>Login</h1>
 
         <section class="login-form">
-            <form action="login.php" method="POST">
+            <form id="login-form">
 
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
