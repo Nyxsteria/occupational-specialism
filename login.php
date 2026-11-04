@@ -1,3 +1,3 @@
-?php
-    // Your PHP code for handling the login logic goes here
-?>
+<?php
+header("Content-Type: application/json; charset=utf8");
+echo json_encode(["message" => "Login successful"]); ?>
