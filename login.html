@@ -6,15 +6,23 @@
     <link rel="stylesheet" href="login-page.css">
     <title>Login Panel</title>
     <script>
-        function login() {
+        async function login() {
             try {
-                const response = await fetch('login.php', {
+                const response = fetch('login.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
                 body: FormData
                 });
+
+                if (!response.ok) {
+                    throw new Error('Server Error: ${response.status}');
+                }
+
+                const result = await response.json();
+                console.log(result);
+                
             } catch (error) {
                 console.error('Request failed: Error:', error);
             }
