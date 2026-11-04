@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="login-page.css">
-    <script src="login.js" defer></script>
     <title>Login Panel</title>
+
+    <link rel="stylesheet" href="login-page.css">
+    <script src="scripts/login.js" defer></script>
 </head>
 
 <body>
+
     <div class="login-container">
 
         <h1>Login</h1>
 
         <section class="login-form">
+
             <form id="login-form">
 
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    autocomplete="username"
+                >
 
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    autocomplete="current-password"
+                >
 
                 <input type="submit" value="Login">
 
             </form>
+
         </section>
 
     </div>
+
 </body>
 </html>

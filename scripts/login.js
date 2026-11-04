@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
     if (!loginForm) {
-        console.error('Form with id="login-form" not found.');
+        console.error('login-form not found');
         return;
     }
 
@@ -14,34 +14,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
 
-        const formData = new URLSearchParams();
-        formData.append('username', username);
-        formData.append('password', password);
-
         try {
 
-            const response = await fetch('login.php', {
+            const response = await fetch('./login.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: formData
+                body: new URLSearchParams({
+                    username,
+                    password
+                })
             });
-
-            if (!response.ok) {
-                throw new Error(`Server Error: ${response.status}`);
-            }
 
             const result = await response.json();
 
-            console.log(result);
-            alert(result.message);
+            if (result.success) {
+                window.location.href = 'main.html';
+            } else {
+                alert(result.message);
+            }
 
         } catch (error) {
-
-            console.error('Request failed:', error);
-            alert('Login request failed.');
-
+            console.error(error);
+            alert('Login failed.');
         }
 
     });
