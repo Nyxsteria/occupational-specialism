@@ -1,13 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 /* ==========================================
    Global
 ========================================== */
 
 body {
-    margin: 0;
-    font-family: sans-serif;
-    background-color: #f5f7fa;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(
+        135deg,
+        #667eea 0%,
+        #764ba2 100%
+    );
+    color: #1f2937;
 }
-
 
 /* ==========================================
    Header
@@ -21,20 +33,24 @@ body {
     justify-content: space-between;
     align-items: center;
 
-    padding: 1rem 2rem;
+    padding: 20px 40px;
 
-    background-color: white;
+    background: rgba(255, 255, 255, 0.95);
 
-    border-bottom: 1px solid #ccc;
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
     z-index: 1000;
 }
 
 .site-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #4f46e5;
 }
-
 
 /* ==========================================
    Navigation
@@ -42,32 +58,31 @@ body {
 
 .navigator-menu ul {
     display: flex;
-    gap: 1rem;
-
-    margin: 0;
-    padding: 0;
-
+    gap: 12px;
     list-style: none;
 }
 
 .nav-button {
-    background-color: #0078d4;
+    background: #667eea;
     color: white;
 
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
 
-    padding: 0.5rem 1rem;
+    padding: 10px 18px;
+
+    font-family: inherit;
+    font-weight: 600;
 
     cursor: pointer;
 
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .nav-button:hover {
-    background-color: #005a9e;
+    background: #5563d6;
+    transform: translateY(-2px);
 }
-
 
 /* ==========================================
    Main Layout
@@ -75,13 +90,18 @@ body {
 
 .main-content {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
 
     gap: 40px;
 
-    padding: 40px;
-}
+    width: 100%;
 
+    margin: 40px 0;
+
+    padding: 0 20px;
+
+    justify-content: flex-start;
+}
 
 /* ==========================================
    Main Image
@@ -92,16 +112,16 @@ body {
 }
 
 .image-container img {
+    width: 550px;
+    max-width: 100%;
+
+    border-radius: 20px;
+
     display: block;
 
-    width: 500px;
-    height: auto;
-
-    border-radius: 12px;
-
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.15);
 }
-
 
 /* ==========================================
    Cards
@@ -110,51 +130,66 @@ body {
 .card-container {
     display: flex;
     flex-direction: column;
-
     gap: 20px;
 }
 
 .card {
-    width: 350px;
+    width: 380px;
 
-    padding: 20px;
+    padding: 25px;
 
-    background-color: white;
+    background: white;
 
-    border-radius: 12px;
+    border-radius: 20px;
 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.12);
 
-    transition: transform 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-5px);
+
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .card h2 {
-    margin-top: 0;
-    color: #0078d4;
+    color: #4f46e5;
+    margin-bottom: 10px;
+}
+
+.card p {
+    line-height: 1.6;
+    margin-bottom: 18px;
+    color: #4b5563;
 }
 
 .card button {
-    background-color: #0078d4;
+    width: 100%;
+
+    background: #667eea;
     color: white;
 
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
 
-    padding: 10px 20px;
+    padding: 12px;
+
+    font-family: inherit;
+    font-weight: 600;
 
     cursor: pointer;
 
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .card button:hover {
-    background-color: #005a9e;
+    background: #5563d6;
 }
-
 
 /* ==========================================
    Popup Overlay
@@ -168,7 +203,9 @@ body {
     justify-content: center;
     align-items: center;
 
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.55);
+
+    backdrop-filter: blur(5px);
 
     z-index: 2000;
 }
@@ -177,28 +214,25 @@ body {
     display: none;
 }
 
-
 /* ==========================================
    Popup Card
 ========================================== */
 
 .popup-card {
-    position: relative;
-
-    width: 450px;
+    width: 550px;
     max-width: 90vw;
 
-    padding: 25px;
+    padding: 30px;
 
-    background-color: white;
+    background: white;
 
-    border-radius: 12px;
+    border-radius: 20px;
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.25);
 
-    overflow: hidden;
+    position: relative;
 }
-
 
 /* ==========================================
    Popup Close Button
@@ -207,49 +241,47 @@ body {
 .popup-close {
     position: absolute;
 
-    top: 10px;
-    right: 15px;
+    top: 15px;
+    right: 20px;
 
-    background: none;
     border: none;
+    background: none;
 
-    font-size: 24px;
+    font-size: 1.8rem;
 
     cursor: pointer;
+
+    color: #6b7280;
 }
 
 .popup-close:hover {
-    color: #0078d4;
+    color: #4f46e5;
 }
-
 
 /* ==========================================
    Popup Content
 ========================================== */
 
 #popup-title {
-    margin-top: 0;
-    color: #0078d4;
-}
-
-.popup-image {
-    display: block;
-
-    width: 100%;
-    height: 200px;
-
-    object-fit: cover;
-
-    border-radius: 8px;
-
+    color: #4f46e5;
     margin-bottom: 15px;
 }
 
-#popup-description {
-    color: #333;
-    line-height: 1.6;
+.popup-image {
+    width: 100%;
+    height: 250px;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+
+    margin-bottom: 20px;
 }
 
+#popup-description {
+    line-height: 1.8;
+    color: #4b5563;
+}
 
 /* ==========================================
    Dynamic Actions
@@ -258,43 +290,44 @@ body {
 #popup-actions {
     display: flex;
     justify-content: center;
-
-    gap: 10px;
-
-    margin-top: 20px;
-
     flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 25px;
 }
 
 #popup-actions button {
-    background-color: #0078d4;
+    background: #667eea;
     color: white;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
 
-    padding: 10px 20px;
+    padding: 12px 20px;
+
+    font-weight: 600;
 
     cursor: pointer;
 
-    transition:
-        background-color 0.3s ease,
-        transform 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 #popup-actions button:hover {
-    background-color: #005a9e;
-
+    background: #5563d6;
     transform: translateY(-2px);
 }
 
-#popup-actions button:active {
-    transform: translateY(0);
+/* ==========================================
+   Footer
+========================================== */
+
+footer {
+    height: 60px;
 }
 
-
 /* ==========================================
-   Mobile Layout
+   Mobile
 ========================================== */
 
 @media (max-width: 900px) {
@@ -306,19 +339,30 @@ body {
 
     .image-container img {
         width: 100%;
-        max-width: 500px;
+        max-width: 600px;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 600px;
     }
 
 }
 
 @media (max-width: 600px) {
 
-    .popup-card {
-        width: 90vw;
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
     }
 
-    .card {
-        width: auto;
+    .navigator-menu ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .popup-card {
+        width: 95vw;
     }
 
     #popup-actions {

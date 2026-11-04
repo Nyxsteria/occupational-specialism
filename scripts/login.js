@@ -11,33 +11,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         event.preventDefault();
 
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value.trim();
+        const formData = new FormData(loginForm);
 
         try {
 
-            const response = await fetch('./login.php', {
+            const response = await fetch('login.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    username,
-                    password
-                })
+                body: formData
             });
 
             const result = await response.json();
 
+            console.log(result);
+
             if (result.success) {
+
                 window.location.href = 'main.html';
+
             } else {
+
                 alert(result.message);
+
             }
 
         } catch (error) {
-            console.error(error);
+
+            console.error('Login Error:', error);
             alert('Login failed.');
+
         }
 
     });
