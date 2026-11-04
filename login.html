@@ -6,7 +6,20 @@
     <link rel="stylesheet" href="login-page.css">
     <title>Login Panel</title>
     <script>
+
+        const username='admin';
+        const password='admin';
+
+        const FormData = new URLSearchParams();
+        FormData.append('username', username);
+        FormData.append('password', password);
+
         async function login() {
+
+            document.getElementById('login-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formElement = event.target;
+            });
             try {
                 const response = fetch('login.php', {
                     method: 'POST',
@@ -22,7 +35,7 @@
 
                 const result = await response.json();
                 console.log(result);
-                
+
             } catch (error) {
                 console.error('Request failed: Error:', error);
             }
