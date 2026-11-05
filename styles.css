@@ -287,3 +287,14 @@ header {
     background: #5665ec;
 }
 
+.item-card {
+    transform: translateY(-10);
+    margin-top: 10px;
+    display: inline-block;
+    width: 300px;
+    justify-content: right;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+}
