@@ -242,8 +242,7 @@ header {
 
     border-radius: 20px;
 
-    width: fit-content;
-    max-width: 1000px;
+    max-width: 2000px;
 
     margin: 0;
 }
@@ -297,4 +296,12 @@ header {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,.1);
+}
+
+.item-card img {
+    width: 50%;
+    border-radius: 360px;
+    margin-bottom: 15px;
+    color: rgb(255, 255, 255);
+    background: #7509a0;
 }
