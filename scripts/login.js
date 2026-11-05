@@ -44,3 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+localStorage.setItem("username", username);
+window.location.href = "main.html";

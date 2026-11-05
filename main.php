@@ -1,29 +1,33 @@
 <?php
-
 session_start();
 
 if (
     !isset($_SESSION['logged_in']) ||
     $_SESSION['logged_in'] !== true
 ) {
-    header('Location: index.html');
+    header('Location: login.html');
     exit();
 }
-
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
-</head>
-<body>
+<header>
+    <div class="header-container">
 
-    <h1>Main Page</h1>
+        <div class="site-title">
+            Welcome back,
+            <span class="username">
+                <?= htmlspecialchars($_SESSION['username']) ?>
+            </span>
+        </div>
 
-    <p>Login successful.</p>
+        <nav class="navigator-menu">
+            <ul>
+                <li><button class="nav-button">About</button></li>
+                <li><button class="nav-button">Contact</button></li>
+                <li><button class="nav-button">Resources</button></li>
+                <li><button class="nav-button">Home</button></li>
+            </ul>
+        </nav>
 
-</body>
-</html>
+    </div>
+</header>

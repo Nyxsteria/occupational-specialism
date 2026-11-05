@@ -367,3 +367,8 @@ header {
         max-width: 100%;
     }
 }
+
+.username {
+    color: #000000;
+    font-weight: 700;
+}
