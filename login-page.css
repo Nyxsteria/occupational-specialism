@@ -116,3 +116,20 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background: #5563d6;
 }
+
+.forgot-password, .create-account {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    text-align: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-between;
+}
+
+.forgot-password a:hover,
+.create-account a:hover {
+
+    text-decoration: underline;
+
+}
