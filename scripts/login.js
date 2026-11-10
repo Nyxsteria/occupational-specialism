@@ -22,28 +22,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
 
-            console.log(result);
+            console.log('Server Response:', result);
 
             if (result.success) {
 
-                window.location.href = 'main.html';
+                const username = formData.get('username');
+
+                window.location.href =
+                    `main.html?username=${encodeURIComponent(username)}`;
 
             } else {
 
-                alert(result.message);
+                alert(result.message || 'Invalid username or password.');
 
             }
 
         } catch (error) {
 
             console.error('Login Error:', error);
-            alert('Login failed.');
+
+            alert('Login failed. Check the console for details.');
 
         }
 
     });
 
 });
-
-localStorage.setItem("username", username);
-window.location.href = "main.html";

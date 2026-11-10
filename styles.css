@@ -49,8 +49,8 @@ header {
 }
 
 .site-title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 350;
     color: #3124d6;
 }
 
@@ -368,7 +368,6 @@ header {
     }
 }
 
-.username {
+#username {
     color: #000000;
-    font-weight: 700;
 }
