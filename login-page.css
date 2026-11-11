@@ -1,5 +1,90 @@
-#create-account-form {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(
+        135deg,
+        #667eea 0%,
+        #764ba2 100%
+    );
+
+    font-family: 'Inter', sans-serif;
+}
+
+button {
+    display: inline-block;
+
+    padding: 12px 24px;
+    margin-top: 20px;
+
+    background: #667eea;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 8px;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 12px rgba(102, 126, 234, 0.25);
+
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s ease,
+        box-shadow 0.3s ease;
+}
+
+button:hover {
+    background: #5563d6;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(102, 126, 234, 0.35);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus {
+    outline: none;
+
+    box-shadow:
+        0 0 0 4px rgba(102, 126, 234, 0.25);
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-container h1 {
+    color: #ffffff;
+
+    font-size: 2.5rem;
+    font-weight: 700;
+
+    margin-bottom: 20px;
+}
+
+.login-form {
     width: 380px;
 
     padding: 40px;
@@ -10,52 +95,12 @@
 
     box-shadow:
         0 15px 40px rgba(0, 0, 0, 0.15);
-
-    display: flex;
-    flex-direction: column;
-}
-
-body {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(
-        135deg,
-        #667eea 0%,
-        #764ba2 100%
-    );
-    font-family: 'Inter', sans-serif;
-}
-
-.form-header {
-
-    text-align: center;
-
-    margin-bottom: 20px;
-}
-
-.form-header h1 {
-
-    color: #111827;
-
-    font-size: 2.5rem;
-
-    font-weight: 700;
-
-    margin-bottom: 10px;
-}
-
-.form-header p {
-
-    color: #6b7280;
-
-    font-size: 0.95rem;
 }
 
 label {
-
     display: block;
+
+    text-align: left;
 
     margin-bottom: 8px;
 
@@ -66,7 +111,6 @@ label {
 
 input[type="text"],
 input[type="password"] {
-
     width: 100%;
 
     padding: 12px;
@@ -78,68 +122,123 @@ input[type="password"] {
     border-radius: 8px;
 
     font-size: 1rem;
-
-    font-family: inherit;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
-
-    outline: none;
-
-    border-color: #667eea;
-
-    box-shadow:
-        0 0 0 4px rgba(102, 126, 234, 0.15);
-}
-
-button {
-
+input[type="submit"] {
     width: 100%;
 
     padding: 14px;
-
-    background: #667eea;
-
-    color: white;
 
     border: none;
 
     border-radius: 8px;
 
-    font-size: 1rem;
+    background: #667eea;
 
+    color: white;
+
+    font-size: 1rem;
     font-weight: 600;
 
     cursor: pointer;
-
-    transition: .3s;
 }
 
-button:hover {
-
+input[type="submit"]:hover {
     background: #5563d6;
-
-    transform: translateY(-2px);
 }
 
-.login-link {
+.forgot-password,
+.create-account {
+    display: flex;
+
+    justify-content: center;
+
+    margin-top: 15px;
 
     text-align: center;
 
-    margin-top: 20px;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    align-content: space-between;
 }
 
-.login-link a {
-
-    text-decoration: none;
-
-    color: #667eea;
-
-    font-weight: 600;
-}
-
-.login-link a:hover {
-
+.forgot-password a:hover,
+.create-account a:hover {
     text-decoration: underline;
+}
+
+.popup {
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    width: 380px;
+
+    z-index: 9999;
+}
+
+.popup.hidden {
+    display: none;
+}
+
+.popup-content {
+
+    background: #ffffff;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    border-left: 5px solid #667eea;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.2);
+
+    animation: slideIn 0.3s ease;
+}
+
+.popup-content h2 {
+
+    font-size: 1.1rem;
+
+    color: #111827;
+
+    margin-bottom: 8px;
+}
+
+.popup-content p {
+
+    color: #4b5563;
+
+    line-height: 1.5;
+
+    margin-bottom: 15px;
+}
+
+#popup-button {
+
+    width: 100%;
+}
+
+@keyframes slideIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateX(120%);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateX(0);
+
+    }
+
 }

@@ -29,20 +29,16 @@ if ($user) {
 
         echo json_encode([
             'success' => true,
-            'message' => 'Login successful',
+            'message' => 'Login successful.',
             'username' => $user['username']
         ]);
-
-        exit;
 
     } else {
 
         echo json_encode([
             'success' => false,
-            'message' => 'Invalid password'
+            'message' => 'The password entered is incorrect.'
         ]);
-
-        exit;
 
     }
 
@@ -50,9 +46,7 @@ if ($user) {
 
     echo json_encode([
         'success' => false,
-        'message' => 'User not found'
+        'message' => 'No account exists with this username. Do you have an account?'
     ]);
-
-    exit;
 
 }
