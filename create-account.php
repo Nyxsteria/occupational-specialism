@@ -5,9 +5,7 @@ ini_set('display_errors', 1);
 
 header('Content-Type: application/json');
 
-header('Content-Type: application/json');
-
-require_once 'db.php';
+require 'db.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -20,6 +18,7 @@ if (empty($username) || empty($password)) {
         "success" => false,
         "message" => "All fields are required."
     ]);
+
     exit();
 }
 
@@ -35,6 +34,7 @@ if ($stmt->fetch()) {
         "success" => false,
         "message" => "Username already exists."
     ]);
+
     exit();
 }
 

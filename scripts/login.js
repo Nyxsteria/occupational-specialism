@@ -28,19 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const username = formData.get('username');
 
+                console.log("Saving username:", username);
+
                 window.location.href =
-                    `main.html?username=${encodeURIComponent(username)}`;
+                    `main.html?username=${encodeURIComponent(result.username)}`;
 
-            } else {
-
-                alert(result.message || 'Invalid username or password.');
-
-            }
+}
 
         } catch (error) {
 
             console.error('Login Error:', error);
-
             alert('Login failed. Check the console for details.');
 
         }
