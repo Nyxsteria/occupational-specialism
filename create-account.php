@@ -3,6 +3,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+session_start();
+
 header('Content-Type: application/json');
 
 require 'db.php';
@@ -18,7 +20,6 @@ if (empty($username) || empty($password)) {
         "success" => false,
         "message" => "All fields are required."
     ]);
-
     exit();
 }
 
@@ -32,7 +33,7 @@ if ($stmt->fetch()) {
 
     echo json_encode([
         "success" => false,
-        "message" => "Username already exists."
+        "message" => "A user with this username already exists."
     ]);
 
     exit();
@@ -53,7 +54,11 @@ $stmt->execute([
     $hashedPassword
 ]);
 
+$_SESSION['logged_in'] = true;
+$_SESSION['username'] = $username;
+
 echo json_encode([
     "success" => true,
-    "message" => "Account created successfully."
+    "message" => "Account created successfully.",
+    "username" => $username
 ]);

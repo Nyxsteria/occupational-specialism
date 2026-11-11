@@ -1,29 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="create-account.css">
-    <script src="create-account.js" defer></script>
+
     <title>Create Account</title>
+
+    <link rel="stylesheet" href="create-account.css">
+
+    <script src="create-account.js" defer></script>
+
+
 </head>
+
 <body>
-    <h1>Create Account</h1>
+
     <form id="create-account-form">
-        
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <div class="form-header">
 
-        <button type="submit">Create Account</button>
+            <h1>Create Account</h1>
+
+            <p>
+                Create your account to access the portal.
+            </p>
+
+        </div>
+
+        <label for="username">
+            Username
+        </label>
+
+        <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter a username"
+            required
+        >
+
+        <label for="password">
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter a password"
+            required
+        >
+
+        <button type="submit">
+            Create Account
+        </button>
 
         <div class="login-link">
-        <a href="login.html">
-            Already have an account? Login
-        </a>
-</div>
+
+            <a href="login.html">
+                Already have an account? Login
+            </a>
+
+        </div>
+
     </form>
+
+    <!-- Success / Error Popup -->
+
+    <div
+        id="popup"
+        class="popup hidden"
+    >
+
+        <div class="popup-content">
+
+            <h2 id="popup-title">
+                Notification
+            </h2>
+
+            <p id="popup-message">
+                Message goes here.
+            </p>
+
+            <button
+                id="popup-button"
+                type="button"
+            >
+                Continue
+            </button>
+
+        </div>
+
+    </div>
+
 </body>
 </html>
