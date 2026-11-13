@@ -111,12 +111,10 @@ header {
    IMAGE
 ========================== */
 
-.image-container img {
+.left-column img {
     width: 100%;
     display: block;
-
-    border-radius: 20px;
-
+    border-radius: 10px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, .15);
 }
 
@@ -126,11 +124,15 @@ header {
 
 .card-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 15px;
+    align-items: stretch;
+    margin-bottom: 10px;
 }
 
 .card {
+    margin-bottom: 30px;
+
     width: 100%;
 
     background: white;
@@ -195,6 +197,7 @@ header {
 
     display: flex;
     flex-direction: column;
+    transform: translateY(-5px);
 
     gap: 25px;
 }
@@ -277,6 +280,43 @@ header {
     width: 100%;
 }
 
+.button-container {
+    margin-left: 90%;
+    transform: translateX(60%)
+}
+
+.edit-btn {
+    display: flex;
+    width: 25px;
+    margin: 0 auto;
+    border: none;
+    transform: translateY(-30px);
+
+    background: #667eea;
+
+    padding: 1px 22px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-weight: 600;
+
+    transition: .3s;
+
+
+}
+
+.edit-btn img {
+    justify-content: center;
+    display: flex;
+    height: 30px;
+    width: 40px;
+    transform: translateX(-14px);
+    ;
+
+}
 /* ==========================
    STAT CARDS
 ========================== */
