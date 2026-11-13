@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+
+    background: linear-gradient(
+        135deg,
+        #667eea 0%,
+        #764ba2 100%
+    );
+}
+
+/* ==========================
+   HEADER
+========================== */
+
+header {
+    padding-top: 15px;
+}
+
+.header-container {
+    width: 98%;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 15px 30px;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+
+    border-radius: 25px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+
+    position: sticky;
+    top: 15px;
+
+    z-index: 1000;
+}
+
+.site-title {
+    font-size: 1rem;
+    font-weight: 350;
+    color: #3124d6;
+}
+
+.navigator-menu ul {
+    display: flex;
+    gap: 12px;
+    list-style: none;
+}
+
+.nav-button {
+    border: none;
+
+    background: #667eea;
+    color: white;
+
+    padding: 12px 22px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-weight: 600;
+
+    transition: .3s;
+}
+
+.nav-button:hover {
+    transform: translateY(-2px);
+    background: #5665ec;
+}
+
+/* ==========================
+   MAIN CONTENT
+========================== */
+
+.main-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+
+    padding: 25px;
+}
+
+/* ==========================
+   LEFT COLUMN
+========================== */
+
+.left-column {
+    width: 400px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ==========================
+   IMAGE
+========================== */
+
+.image-container img {
+    width: 100%;
+    display: block;
+
+    border-radius: 20px;
+
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .15);
+}
+
+/* ==========================
+   SIDEBAR CARDS
+========================== */
+
+.card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card {
+    width: 100%;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .12);
+
+    transition: transform .3s ease,
+                box-shadow .3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .15);
+}
+
+.card h2 {
+    color: #4f46e5;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.card button {
+    width: 100%;
+
+    border: none;
+
+    background: #667eea;
+    color: white;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.card button:hover {
+    background: #5665ec;
+}
+
+/* ==========================
+   RIGHT COLUMN
+========================== */
+
+.right-column {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 25px;
+}
+
+/* ==========================
+   DASHBOARD
+========================== */
+
+.dashboard {
+    background: #f9f9f9;
+
+    padding: 40px;
+
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .12);
+}
+
+.dashboard h1 {
+    color: #4f46e5;
+    font-size: 2rem;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.quote {
+    font-style: italic;
+    color: #555;
+    text-align: center;
+}
+
+/* ==========================
+   DASHBOARD BUTTONS
+========================== */
+
+.dashboard-btn {
+    width: 90%;
+    margin: 0 auto;
+
+    border: none;
+
+    background: #667eea;
+    color: white;
+
+    padding: 12px 22px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-weight: 600;
+
+    transition: .3s;
+}
+
+.dashboard-btn:hover {
+    background: #5665ec;
+    transform: translateY(-2px);
+}
+
+/* ==========================
+   STAT CARD CONTAINER
+========================== */
+
+.data-card {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+    width: 100%;
+}
+
+/* ==========================
+   STAT CARDS
+========================== */
+
+.item-card {
+    flex: 1;
+    min-width: 230px;
+    max-width: 280px;
+
+    height: 230px;
+
+    background: white;
+
+    border: 3px solid #6c63ff;
+    border-radius: 20px;
+
+    padding: 25px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    transition: .3s ease;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 15px 30px rgba(108, 99, 255, .15);
+}
+
+.item-card img {
+    width: 90px;
+    height: 90px;
+
+    object-fit: contain;
+}
+
+.item-card h1 {
+    font-size: 3rem;
+    font-weight: 700;
+
+    color: #6157ff;
+
+    margin: 0;
+}
+
+.item-card p {
+    font-size: 1.1rem;
+    font-weight: 500;
+
+    color: #333;
+
+    margin: 0;
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 900px) {
+
+    .main-content {
+        flex-direction: column;
+    }
+
+    .left-column {
+        width: 100%;
+    }
+
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .navigator-menu ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .data-card {
+        justify-content: center;
+    }
+
+    .item-card {
+        max-width: 100%;
+    }
+}
+
+#username {
+    color: #000000;
+}
