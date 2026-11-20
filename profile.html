@@ -7,8 +7,9 @@
     <title>Profile</title>
 
     <link rel="stylesheet" href="css/profile-page.css">
+
     <script src="scripts/script.js" defer></script>
-    <script src="scripts/username-retrieve.js"defer></script>
+    <script src="scripts/username-retrieve.js" defer></script>
 </head>
 
 <body>
@@ -17,17 +18,19 @@
         <div class="header-container">
 
             <div class="site-title">
-               <h1> Your Profile,
-                <span id="username">.</span>
-               </h1>
+                <h1>
+                    Your Profile,
+                    <span id="username">.</span>
+                </h1>
             </div>
 
-            <nav class="navigator-menu">
-                <ul>
-                    <li><button class="nav-button">About</button></li>
-                    <li><button class="nav-button">Contact</button></li>
-                    <li><button class="nav-button">Resources</button></li>
-                    <li><button class="nav-button">Home</button></li>
+            <nav>
+                <ul class="navigator-menu">
+                    <li><a class="nav-button">About</a></li>
+                    <li><a class="nav-button">Contact</a></li>
+                    <li><a class="nav-button">Resources</a></li>
+                    <li><a class="nav-button">Home</a></li>
+                    <li><img src="bell-image">Notifications</li>
                 </ul>
             </nav>
 
@@ -37,37 +40,27 @@
     <main class="main-content">
 
         <div class="left-column">
-
-            <img class="placeholder-img"
+            <img
+                class="placeholder-img"
                 src="images/placeholder.png"
-                alt="placeholder">            
-
-
+                alt="Profile Placeholder">
         </div>
 
         <div class="right-column">
+
             <section class="dashboard">
 
-                <div class = button-container>
-                    <li><a><img src="images/pencil.svg"></a></li>
-                </div>
-
                 <p class="subtitle">WELCOME TO</p>
+
                 <h1>Your Dashboard</h1>
 
-
-                <p class="subtitle">
-                    
-                </p>
-                
-
                 <div class="body-container">
-                    
-                </div>
-                
-             </section>
 
-             <section class="card-container">
+                </div>
+
+            </section>
+
+            <section class="card-container">
 
                 <div class="card">
                     <h2>About</h2>
@@ -109,17 +102,15 @@
                 </div>
 
             </section>
+
         </div>
 
     </main>
 
+    <footer>
+
+    </footer>
+
 </body>
 
-
-<footer>
-
-
-
-    
-</footer>
 </html>
