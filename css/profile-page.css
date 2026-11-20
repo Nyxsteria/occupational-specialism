@@ -282,41 +282,27 @@ header {
 
 .button-container {
     margin-left: 90%;
-    transform: translateX(60%)
+    justify-content: center;
+    transform: translateX(60%);
 }
 
-.edit-btn {
+.button-container img{
     display: flex;
-    width: 25px;
-    margin: 0 auto;
-    border: none;
+    width: 25%;
+    height: 50px;
+    margin: 0 60px;
     transform: translateY(-30px);
-
-    background: #667eea;
-
-    padding: 1px 22px;
-
-    border-radius: 10px;
-
+    border-radius: 5px;
+    background-color: #d0d2e8;
     cursor: pointer;
 
-    font-family: inherit;
-    font-weight: 600;
-
-    transition: .3s;
-
-
 }
 
-.edit-btn img {
-    justify-content: center;
-    display: flex;
-    height: 30px;
-    width: 40px;
-    transform: translateX(-14px);
-    ;
-
+.button-container li{
+    list-style: none;
 }
+
+
 /* ==========================
    STAT CARDS
 ========================== */
