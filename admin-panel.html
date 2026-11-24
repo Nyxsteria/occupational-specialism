@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login activity</title>
   <style>
-    body { font: 1rem/1.5 system-ui, sans-serif; margin: 2rem; }
+    body { font: 1rem/1.5 system-ui, sans-serif; margin: 2rem; color: #222; }
     .table-wrap { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; }
     th, td { border-bottom: 1px solid #ddd; padding: .65rem; text-align: left; }
@@ -16,8 +16,9 @@
 <body>
   <main>
     <h1>Login activity</h1>
+    <p><a href="admin-panel.php">Open the server-protected admin page</a></p>
     <button id="refresh" type="button">Refresh</button>
-    <p id="message" role="status">Loading…</p>
+    <p id="message" role="status" aria-live="polite">Loading…</p>
 
     <div class="table-wrap">
       <table>
@@ -44,33 +45,35 @@
       tableBody.replaceChildren();
 
       try {
-        const response = await fetch('api/admin-auth-events.php', {
+        // Endpoint is in the repository root beside this HTML file.
+        const response = await fetch('./admin-auth-events.php', {
           credentials: 'same-origin',
-          headers: { 'Accept': 'application/json' }
+          headers: { Accept: 'application/json' },
+          cache: 'no-store'
         });
 
         if (response.status === 403) {
-          message.textContent = 'You must be signed in as an admin to view login activity.';
+          message.textContent = 'Sign in with an admin account to view login activity.';
           return;
         }
-
         if (!response.ok) {
-          throw new Error('Request failed');
+          throw new Error(`Server returned HTTP ${response.status}`);
         }
 
         const data = await response.json();
-
-        if (!data.events.length) {
+        if (!Array.isArray(data.events)) {
+          throw new Error(data.error || 'Unexpected response from the server');
+        }
+        if (data.events.length === 0) {
           message.textContent = 'No authentication events found.';
           return;
         }
 
         for (const event of data.events) {
           const row = document.createElement('tr');
-          const username = event.username || event.username_attempted || '—';
           const values = [
             event.event_timestamp,
-            username,
+            event.username || event.username_attempted,
             event.event_type,
             event.ip_address,
             event.failure_reason
@@ -78,17 +81,16 @@
 
           for (const value of values) {
             const cell = document.createElement('td');
-            // textContent prevents database values from being interpreted as HTML.
-            cell.textContent = value || '—';
+            cell.textContent = value == null || value === '' ? '—' : String(value);
             row.appendChild(cell);
           }
-
           tableBody.appendChild(row);
         }
 
         message.textContent = `Showing ${data.events.length} recent events.`;
-      } catch {
-        message.textContent = 'Could not load login activity. Please try again.';
+      } catch (error) {
+        console.error('Could not load login activity:', error);
+        message.textContent = 'Could not load login activity. Check the browser console and PHP/server error log.';
       }
     }
 

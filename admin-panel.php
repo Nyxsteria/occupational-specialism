@@ -1,45 +1,35 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/config.php'; // Must provide a PDO connection in $pdo
-
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    // Requires HTTPS in production. If your app configures sessions elsewhere,
-    // use that configuration instead.
-    session_set_cookie_params([
-        'httponly' => true,
-        'secure' => true,
-        'samesite' => 'Lax',
-    ]);
-    session_start();
-}
+session_start();
 
 $userId = filter_var($_SESSION['user_id'] ?? null, FILTER_VALIDATE_INT);
-
-if (!$userId) {
-    http_response_code(403);
-    exit('Forbidden');
+if (($_SESSION['logged_in'] ?? false) !== true || !$userId) {
+    header('Location: login.html');
+    exit;
 }
 
 try {
-    // Check the current database role rather than relying on a possibly stale
-    // role value in the session.
+    // db.php is the project's existing PDO bootstrap.
+    require_once __DIR__ . '/db.php';
+
+    // Read the current role from the database, so revoked admin access takes effect.
     $roleQuery = $pdo->prepare('SELECT role FROM users WHERE id = :id');
     $roleQuery->execute(['id' => $userId]);
-    $role = $roleQuery->fetchColumn();
-
-    if ($role !== 'admin') {
+    if ($roleQuery->fetchColumn() !== 'admin') {
         http_response_code(403);
         exit('Forbidden');
     }
 
-    $page = max(1, filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 1);
     $perPage = 50;
-    $offset = ($page - 1) * $perPage;
-
     $totalLogs = (int) $pdo
-    ->query('SELECT COUNT(*) FROM authentication_events')
-    ->fetchColumn();
+        ->query('SELECT COUNT(*) FROM authentication_events')
+        ->fetchColumn();
+    $totalPages = max(1, (int) ceil($totalLogs / $perPage));
+
+    $requestedPage = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+    $page = min(max(1, $requestedPage ?: 1), $totalPages);
+    $offset = ($page - 1) * $perPage;
 
     $logsQuery = $pdo->prepare(
         'SELECT
@@ -48,30 +38,28 @@ try {
             e.event_type,
             e.username_attempted,
             e.ip_address,
+            e.failure_reason,
             e.event_timestamp,
             u.username
-        FROM authentication_events AS e
-        LEFT JOIN users AS u ON u.id = e.user_id
-        ORDER BY e.event_timestamp DESC
-        LIMIT :limit OFFSET :offset'
+         FROM authentication_events AS e
+         LEFT JOIN users AS u ON u.id = e.user_id
+         ORDER BY e.event_timestamp DESC, e.event_id DESC
+         LIMIT :limit OFFSET :offset'
     );
     $logsQuery->bindValue(':limit', $perPage, PDO::PARAM_INT);
     $logsQuery->bindValue(':offset', $offset, PDO::PARAM_INT);
     $logsQuery->execute();
-
     $logs = $logsQuery->fetchAll(PDO::FETCH_ASSOC);
 } catch (Throwable $e) {
     error_log('Admin login-log page failed: ' . $e->getMessage());
     http_response_code(500);
-    exit('Unable to load login activity.');
+    exit('Unable to load login activity. Check the server error log.');
 }
 
 function escapeHtml(?string $value): string
 {
     return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
-
-$totalPages = max(1, (int) ceil($totalLogs / $perPage));
 ?>
 <!doctype html>
 <html lang="en">
@@ -80,7 +68,7 @@ $totalPages = max(1, (int) ceil($totalLogs / $perPage));
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login activity</title>
     <style>
-        body { font: 1rem/1.5 system-ui, sans-serif; margin: 2rem; }
+        body { font: 1rem/1.5 system-ui, sans-serif; margin: 2rem; color: #222; }
         .table-wrap { overflow-x: auto; }
         table { border-collapse: collapse; width: 100%; }
         th, td { border-bottom: 1px solid #ddd; padding: .65rem; text-align: left; }
@@ -99,20 +87,22 @@ $totalPages = max(1, (int) ceil($totalLogs / $perPage));
                     <tr>
                         <th>Time</th>
                         <th>Username</th>
-                        <th>Result</th>
+                        <th>Event</th>
                         <th>IP address</th>
+                        <th>Failure reason</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!$logs): ?>
-                        <tr><td colspan="4">No login events found.</td></tr>
+                        <tr><td colspan="5">No login events found.</td></tr>
                     <?php else: ?>
                         <?php foreach ($logs as $log): ?>
                             <tr>
-                                <td><?= escapeHtml($log['occurred_at']) ?></td>
-                                <td><?= escapeHtml($log['username'] ?? $log['attempted_username']) ?></td>
-                                <td><?= escapeHtml($log['status']) ?></td>
+                                <td><?= escapeHtml($log['event_timestamp']) ?></td>
+                                <td><?= escapeHtml($log['username'] ?? $log['username_attempted']) ?></td>
+                                <td><?= escapeHtml($log['event_type']) ?></td>
                                 <td><?= escapeHtml($log['ip_address']) ?></td>
+                                <td><?= escapeHtml($log['failure_reason']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
