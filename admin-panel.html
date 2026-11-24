@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login activity</title>
+  <style>
+    body { font: 1rem/1.5 system-ui, sans-serif; margin: 2rem; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #ddd; padding: .65rem; text-align: left; }
+    th { background: #f4f4f4; }
+    #message { margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Login activity</h1>
+    <button id="refresh" type="button">Refresh</button>
+    <p id="message" role="status">Loading…</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Event</th>
+            <th>IP address</th>
+            <th>Failure reason</th>
+          </tr>
+        </thead>
+        <tbody id="events"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const message = document.querySelector('#message');
+    const tableBody = document.querySelector('#events');
+
+    async function loadEvents() {
+      message.textContent = 'Loading…';
+      tableBody.replaceChildren();
+
+      try {
+        const response = await fetch('api/admin-auth-events.php', {
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.status === 403) {
+          message.textContent = 'You must be signed in as an admin to view login activity.';
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Request failed');
+        }
+
+        const data = await response.json();
+
+        if (!data.events.length) {
+          message.textContent = 'No authentication events found.';
+          return;
+        }
+
+        for (const event of data.events) {
+          const row = document.createElement('tr');
+          const username = event.username || event.username_attempted || '—';
+          const values = [
+            event.event_timestamp,
+            username,
+            event.event_type,
+            event.ip_address,
+            event.failure_reason
+          ];
+
+          for (const value of values) {
+            const cell = document.createElement('td');
+            // textContent prevents database values from being interpreted as HTML.
+            cell.textContent = value || '—';
+            row.appendChild(cell);
+          }
+
+          tableBody.appendChild(row);
+        }
+
+        message.textContent = `Showing ${data.events.length} recent events.`;
+      } catch {
+        message.textContent = 'Could not load login activity. Please try again.';
+      }
+    }
+
+    document.querySelector('#refresh').addEventListener('click', loadEvents);
+    loadEvents();
+  </script>
+</body>
+</html>
