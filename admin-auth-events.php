@@ -45,7 +45,7 @@ try {
 
     echo json_encode(
         ['events' => $query->fetchAll(PDO::FETCH_ASSOC)],
-        JSON_INVALID_UTF8_SUBSTITUTE
+        JSON_INVALID_UTF8_SUBSTITUTE | JSON_PRETTY_PRINT
     );
 } catch (Throwable $e) {
     error_log('Admin authentication-events request failed: ' . $e->getMessage());

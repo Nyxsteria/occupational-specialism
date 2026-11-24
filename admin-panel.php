@@ -67,14 +67,7 @@ function escapeHtml(?string $value): string
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login activity</title>
-    <style>
-        body { font: 1rem/1.5 system-ui, sans-serif; margin: 2rem; color: #222; }
-        .table-wrap { overflow-x: auto; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border-bottom: 1px solid #ddd; padding: .65rem; text-align: left; }
-        th { background: #f4f4f4; }
-        nav { display: flex; gap: 1rem; margin-top: 1rem; }
-    </style>
+    <link rel = "stylesheet" href="admin-panel.css">
 </head>
 <body>
     <main>
