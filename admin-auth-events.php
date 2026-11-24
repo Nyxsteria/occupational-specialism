@@ -15,7 +15,7 @@ if (($_SESSION['logged_in'] ?? false) !== true || !$userId) {
 
 try {
     // db.php is the project's existing PDO bootstrap.
-    require_once __DIR__ . '/db.php';
+    require_once __DIR__ . './db.php';
 
     // Confirm the current database role instead of trusting a stale session role.
     $roleQuery = $pdo->prepare('SELECT role FROM users WHERE id = :id');
