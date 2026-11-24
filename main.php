@@ -5,12 +5,169 @@ session_start();
 if (
     !isset($_SESSION['logged_in']) ||
     $_SESSION['logged_in'] !== true
-){
-    header('Location: index.html');
+) {
+    header('Location: login.html');
     exit();
 }
 
 $username = $_SESSION['username'];
-
+$role = $_SESSION['role'];
 
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occupational Specialism</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="scripts/script.js" defer></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-container">
+
+            <div class="site-title">
+               <h1> Welcome back,
+                <span id="username">
+                    <?php echo htmlspecialchars($username); ?>
+                </span>
+
+               </h1>
+            </div>
+
+            <nav class="navigator-menu">
+                <ul>
+                    <li><button class="nav-button">About</button></li>
+                    <li><button class="nav-button">Contact</button></li>
+                    <li><button class="nav-button">Resources</button></li>
+                    <li><button class="nav-button">Home</button></li>
+                    <li><button class ="nav-button" href="logout.php">Log Out</button></li>
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <div class="left-column">
+
+            <div class="image-container">
+                <img src="images/placeholder.png" alt="Placeholder image">
+            </div>
+
+            <section class="card-container">
+
+                <div class="card">
+                    <h2>About</h2>
+
+                    <p>
+                        Learn more about the Occupational
+                        Specialism and its objectives.
+                    </p>
+
+                    <button id="openPopup">
+                        Read More
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h2>Contact</h2>
+
+                    <p>
+                        Find contact details and ways
+                        to get in touch.
+                    </p>
+
+                    <button>
+                        View Contact Information
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h2>Home</h2>
+
+                    <p>
+                        Return to the homepage and
+                        explore other sections.
+                    </p>
+
+                    <button>
+                        Return To Home
+                    </button>
+                </div>
+
+            </section>
+
+        </div>
+
+        <div class="right-column">
+
+            <section class="dashboard">
+
+                <p class="subtitle">WELCOME TO</p>
+
+                <h1>Occupational Specialism</h1>
+
+                <p class="subtitle">
+                    Explore project work, industry standards, technical skills and
+                    learning resources related to Digital Production, Design and Development.
+                </p>
+
+                <button class="dashboard-btn">
+                    View Projects
+                </button>
+
+                <button class="dashboard-btn">
+                    Learn More
+                </button>
+
+                <div class="body-container">
+                    <p class="quote">
+                        "Developing today's skills for tomorrow's opportunities"
+                    </p>
+                </div>
+
+            </section>
+
+            <section class="data-card">
+
+                <div class="item-card">
+                    <img src="images/document.svg" alt="Tasks Completed">
+                    <h1>X</h1>
+                    <p>Tasks Completed</p>
+                </div>
+
+                <div class="item-card">
+                    <img src="images/grad-cap.svg" alt="Skills Developed">
+                    <h1>X</h1>
+                    <p>Skills Developed</p>
+                </div>
+
+                <div class="item-card">
+                    <img src="images/medal.svg" alt="Certificates">
+                    <h1>X</h1>
+                    <p>Certificates</p>
+                </div>
+
+                <div class="item-card">
+                    <img src="images/clock.svg" alt="Hours Studied">
+                    <h1>X</h1>
+                    <p>Hours Studied</p>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

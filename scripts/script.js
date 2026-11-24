@@ -24,36 +24,37 @@ let popupTimer;
 
 function setCookie(name, value, days) {
 
-    const date = new Date();
-
-    date.setTime(
-        date.getTime() +
-        (days * 24 * 60 * 60 * 1000)
-    );
+    const maxAge =
+        days * 24 * 60 * 60;
 
     document.cookie =
-        `${name}=${value}; expires=${date.toUTCString()}; path=/`;
+        `${encodeURIComponent(name)}=${encodeURIComponent(value)}; ` +
+        `Max-Age=${maxAge}; ` +
+        `Path=/; ` +
+        `SameSite=Lax`;
 
 }
 
 function getCookie(name) {
 
-    const cookieName = name + "=";
+    const cookieName =
+        encodeURIComponent(name) + "=";
 
-    const decodedCookie =
-        decodeURIComponent(document.cookie);
+    const cookies =
+        document.cookie.split(";");
 
-    const cookieArray =
-        decodedCookie.split(";");
-
-    for (let cookie of cookieArray) {
+    for (let cookie of cookies) {
 
         cookie = cookie.trim();
 
-        if (cookie.indexOf(cookieName) === 0) {
+        if (
+            cookie.startsWith(cookieName)
+        ) {
 
-            return cookie.substring(
-                cookieName.length
+            return decodeURIComponent(
+                cookie.substring(
+                    cookieName.length
+                )
             );
 
         }
@@ -61,6 +62,16 @@ function getCookie(name) {
     }
 
     return null;
+
+}
+
+function deleteCookie(name) {
+
+    document.cookie =
+        `${encodeURIComponent(name)}=; ` +
+        `Max-Age=0; ` +
+        `Path=/; ` +
+        `SameSite=Lax`;
 
 }
 
@@ -153,7 +164,6 @@ function handleAction(action) {
         case "close":
 
             closePopup();
-
             break;
 
         case "acceptCookies":
@@ -165,14 +175,17 @@ function handleAction(action) {
             );
 
             closePopup();
-
             break;
 
         case "denyCookies":
 
+            setCookie(
+                "cookieConsent",
+                "denied",
+                365
+            );
 
             closePopup();
-
             break;
 
         case "readMoreCookies":
