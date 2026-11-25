@@ -19,35 +19,33 @@ $statistics = [
     'certificates' => 0,
     'hours_studied' => 0,
 ];
+$statisticsError = false;
+$statisticsRowFound = false;
 
 if ($userId > 0) {
     require_once __DIR__ . '/db.php';
 
     try {
-        // Ensure every account has a statistics row and keep the readable
-        // username column synchronized with the account record in the session.
-        $ensureRow = $pdo->prepare(
-            'INSERT INTO user_dashboard_statistics (user_id, username)
-             VALUES (?, ?)
-             ON DUPLICATE KEY UPDATE username = VALUES(username)'
-        );
-        $ensureRow->execute([$userId, $username]);
-
+        // Read by the account's stable ID. The username column in the
+        // statistics table is for readability and is not required here.
         $stmt = $pdo->prepare(
-            'SELECT tasks_completed, skills_developed, certificates, hours_studied
-             FROM user_dashboard_statistics
-             WHERE user_id = ?'
+            'SELECT s.user_id, s.tasks_completed, s.skills_developed,
+                    s.certificates, s.hours_studied
+             FROM users AS u
+             LEFT JOIN user_dashboard_statistics AS s ON s.user_id = u.id
+             WHERE u.id = ?'
         );
         $stmt->execute([$userId]);
-        $storedStatistics = $stmt->fetch();
+        $row = $stmt->fetch();
 
-        if ($storedStatistics) {
+        if ($row && $row['user_id'] !== null) {
+            $statisticsRowFound = true;
             foreach ($statistics as $key => $defaultValue) {
-                $statistics[$key] = max(0, (int) $storedStatistics[$key]);
+                $statistics[$key] = max(0, (int) $row[$key]);
             }
         }
     } catch (PDOException $exception) {
-        // Log the underlying issue without exposing database details to visitors.
+        $statisticsError = true;
         error_log('Dashboard statistics query failed: ' . $exception->getMessage());
     }
 }
@@ -176,6 +174,15 @@ if ($userId > 0) {
             </section>
 
             <section class="data-card" aria-label="Your learning statistics">
+                <?php if ($statisticsError): ?>
+                    <p class="statistics-message" role="status">
+                        Statistics are currently unavailable. Please check the server error log.
+                    </p>
+                <?php elseif (!$statisticsRowFound): ?>
+                    <p class="statistics-message" role="status">
+                        No statistics row was found for this account; showing zeroes.
+                    </p>
+                <?php endif; ?>
 
                 <div class="item-card">
                     <img src="images/document.svg" alt="">
