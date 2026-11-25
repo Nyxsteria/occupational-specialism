@@ -1,52 +1,59 @@
 <?php
-// Start the session to access stored user credentials
+declare(strict_types=1);
+
 session_start();
 
-// Set header to return JSON responses
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store, private');
 
-// 1. Guard Clause: Check if the user is authenticated
-if (!isset($_SESSION['username'])) {
-    http_response_code(401); // Unauthorized
-    echo json_encode(['status' => 'error', 'message' => 'User not logged in.']);
-    exit();
+$userId = filter_var(
+    $_SESSION['user_id'] ?? '',
+    FILTER_VALIDATE_INT
+);
+
+if (
+    ($_SESSION['logged_in'] ?? false) !== true ||
+    $userId === false ||
+    $userId < 1
+) {
+    http_response_code(401);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Not authenticated.'
+    ]);
+    exit;
 }
 
-$username = $_SESSION['username'];
-
-// 2. Database Connection Credentials
-require_once('db');
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
 try {
-    // 3. Initialize PDO Connection
-    $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
+    require_once __DIR__ . '/db.php';
 
-    // 4. Securely fetch user details (Using Prepared Statements to prevent SQL Injection)
-    $stmt = $pdo->prepare('SELECT id, username, email, bio, created_at FROM users WHERE username = :username');
-    $stmt->execute(['username' => $username]);
-    $user = $stmt->fetch();
+    $stmt = $pdo->prepare(
+        'SELECT username FROM users WHERE id = :id'
+    );
+    $stmt->execute(['id' => $userId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user) {
-        // Remove sensitive data like password hashes if they were included in the query
-        echo json_encode([
-            'status' => 'success',
-            'data'   => $user
-        ]);
-    } else {
+    if (!$user) {
         http_response_code(404);
-        echo json_encode(['status' => 'error', 'message' => 'User record not found.']);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'User record not found.'
+        ]);
+        exit;
     }
 
-} catch (\PDOException $e) {
-    // Log the actual error internally; return a clean error to the client
-    error_log($e->getMessage());
+    echo json_encode([
+        'status' => 'success',
+        'data' => [
+            'username' => $user['username']
+        ]
+    ], JSON_INVALID_UTF8_SUBSTITUTE);
+} catch (Throwable $e) {
+    error_log('Profile request failed: ' . $e->getMessage());
+
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Internal server error.']);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Internal server error.'
+    ]);
 }
