@@ -278,6 +278,15 @@ header {
     width: 100%;
 }
 
+.statistics-message {
+    flex-basis: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #fff8db;
+    color: #5f4b00;
+    line-height: 1.5;
+}
+
 /* ==========================
    STAT CARDS
 ========================== */
@@ -318,7 +327,8 @@ header {
     object-fit: contain;
 }
 
-.item-card h1 {
+.item-card h1,
+.item-card h2 {
     font-size: 3rem;
     font-weight: 700;
 
