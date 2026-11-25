@@ -19,6 +19,7 @@ $statistics = [
     'certificates' => 0,
     'hours_studied' => 0,
 ];
+        // Log the underlying issue without exposing database details to visitors.
 $statisticsError = false;
 $statisticsRowFound = false;
 
@@ -174,7 +175,7 @@ if ($userId > 0) {
             </section>
 
             <section class="data-card" aria-label="Your learning statistics">
-                <?php if ($statisticsError): ?>
+                 <?php if ($statisticsError): ?>
                     <p class="statistics-message" role="status">
                         Statistics are currently unavailable. Please check the server error log.
                     </p>
