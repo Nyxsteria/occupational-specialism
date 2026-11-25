@@ -11,7 +11,39 @@ if (
 }
 
 $username = $_SESSION['username'];
-$role = $_SESSION['role'];
+$userId = (int) ($_SESSION['user_id'] ?? 0);
+$role = $_SESSION['role'] ?? '';
+
+// Keep the dashboard usable if a statistics row has not been created yet.
+$statistics = [
+    'tasks_completed' => 0,
+    'skills_developed' => 0,
+    'certificates' => 0,
+    'hours_studied' => 0,
+];
+
+if ($userId > 0) {
+    require_once __DIR__ . '/db.php';
+
+    try {
+        $stmt = $pdo->prepare(
+            'SELECT tasks_completed, skills_developed, certificates, hours_studied
+             FROM user_dashboard_statistics
+             WHERE user_id = ?'
+        );
+        $stmt->execute([$userId]);
+        $storedStatistics = $stmt->fetch();
+
+        if ($storedStatistics) {
+            foreach ($statistics as $key => $defaultValue) {
+                $statistics[$key] = max(0, (int) $storedStatistics[$key]);
+            }
+        }
+    } catch (PDOException $exception) {
+        // Do not expose database details to visitors; log them for the maintainer.
+        error_log('Dashboard statistics query failed: ' . $exception->getMessage());
+    }
+}
 
 ?>
 
@@ -35,7 +67,7 @@ $role = $_SESSION['role'];
             <div class="site-title">
                <h1> Welcome back,
                 <span id="username">
-                    <?php echo htmlspecialchars($username); ?>
+                    <?php echo htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>
                 </span>
 
                </h1>
@@ -47,7 +79,7 @@ $role = $_SESSION['role'];
                     <li><a class="nav-button">Contact</a></li>
                     <li><a class="nav-button">Resources</a></li>
                     <li><a class="nav-button">Home</a></li>
-                    <li><a class ="nav-button" href="logout.php">Log Out</a></li>
+                    <li><a class="nav-button" href="logout.php">Log Out</a></li>
                 </ul>
             </nav>
 
@@ -136,29 +168,29 @@ $role = $_SESSION['role'];
 
             </section>
 
-            <section class="data-card">
+            <section class="data-card" aria-label="Your learning statistics">
 
                 <div class="item-card">
-                    <img src="images/document.svg" alt="Tasks Completed">
-                    <h1>X</h1>
+                    <img src="images/document.svg" alt="">
+                    <h2><?php echo number_format($statistics['tasks_completed']); ?></h2>
                     <p>Tasks Completed</p>
                 </div>
 
                 <div class="item-card">
-                    <img src="images/grad-cap.svg" alt="Skills Developed">
-                    <h1>X</h1>
+                    <img src="images/grad-cap.svg" alt="">
+                    <h2><?php echo number_format($statistics['skills_developed']); ?></h2>
                     <p>Skills Developed</p>
                 </div>
 
                 <div class="item-card">
-                    <img src="images/medal.svg" alt="Certificates">
-                    <h1>X</h1>
+                    <img src="images/medal.svg" alt="">
+                    <h2><?php echo number_format($statistics['certificates']); ?></h2>
                     <p>Certificates</p>
                 </div>
 
                 <div class="item-card">
-                    <img src="images/clock.svg" alt="Hours Studied">
-                    <h1>X</h1>
+                    <img src="images/clock.svg" alt="">
+                    <h2><?php echo number_format($statistics['hours_studied']); ?></h2>
                     <p>Hours Studied</p>
                 </div>
 
