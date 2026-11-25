@@ -43,11 +43,11 @@ $role = $_SESSION['role'];
 
             <nav class="navigator-menu">
                 <ul>
-                    <li><button class="nav-button">About</button></li>
-                    <li><button class="nav-button">Contact</button></li>
-                    <li><button class="nav-button">Resources</button></li>
-                    <li><button class="nav-button">Home</button></li>
-                    <li><button class ="nav-button" href="logout.php">Log Out</button></li>
+                    <li><a class="nav-button">About</a></li>
+                    <li><a class="nav-button">Contact</a></li>
+                    <li><a class="nav-button">Resources</a></li>
+                    <li><a class="nav-button">Home</a></li>
+                    <li><a class ="nav-button" href="logout.php">Log Out</a></li>
                 </ul>
             </nav>
 
