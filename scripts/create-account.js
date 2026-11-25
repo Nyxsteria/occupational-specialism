@@ -62,8 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
 
                     window.location.href =
-                        `main.html?username=${encodeURIComponent(result.username)}`;
-
+                        'main.php'
                 }, 2000);
 
             } else {
