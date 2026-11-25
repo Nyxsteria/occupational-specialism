@@ -10,11 +10,9 @@ if (
     exit();
 }
 
-$username = $_SESSION['username'];
+$username = $_SESSION['username'] ?? '';
 $userId = (int) ($_SESSION['user_id'] ?? 0);
-$role = $_SESSION['role'] ?? '';
 
-// Keep the dashboard usable if a statistics row has not been created yet.
 $statistics = [
     'tasks_completed' => 0,
     'skills_developed' => 0,
@@ -26,6 +24,15 @@ if ($userId > 0) {
     require_once __DIR__ . '/db.php';
 
     try {
+        // Ensure every account has a statistics row and keep the readable
+        // username column synchronized with the account record in the session.
+        $ensureRow = $pdo->prepare(
+            'INSERT INTO user_dashboard_statistics (user_id, username)
+             VALUES (?, ?)
+             ON DUPLICATE KEY UPDATE username = VALUES(username)'
+        );
+        $ensureRow->execute([$userId, $username]);
+
         $stmt = $pdo->prepare(
             'SELECT tasks_completed, skills_developed, certificates, hours_studied
              FROM user_dashboard_statistics
@@ -40,7 +47,7 @@ if ($userId > 0) {
             }
         }
     } catch (PDOException $exception) {
-        // Do not expose database details to visitors; log them for the maintainer.
+        // Log the underlying issue without exposing database details to visitors.
         error_log('Dashboard statistics query failed: ' . $exception->getMessage());
     }
 }
