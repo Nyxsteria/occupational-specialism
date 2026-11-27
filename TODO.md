@@ -27,10 +27,15 @@ This document summarizes the security features currently present in the applicat
 - [ ] **Disable displayed PHP errors in production.**
   - [ ] Configure PHP not to display errors to users.
   - [ ] Log detailed errors on the server instead.
-  - [ ] Return a generic error message to clients instead of exception text or database details.
+  - [ ] Return a generic error message instead of exception text or database details.
 
 - [ ] **Fix the admin authentication-events include path.**
-  - [ ] Replace the incorrect concatenated `__DIR__ . './db.php'` path in `admin-auth-events.php` with a valid absolute path, consistent with the other PHP files.
+  - [ ] Replace the incorrect concatenated `__DIR__ . './db.php'` path in `admin-auth-events.php` with a valid absolute path consistent with the other PHP files.
+
+- [ ] **Fix broken branch resources and links.**
+  - [ ] Restore the missing `scripts/username-retrieve.js` referenced by `login.php`, or remove/update the reference.
+  - [ ] Fix the admin-panel stylesheet link so it resolves to `css/admin-panel.css`.
+  - [ ] Replace or implement missing administration, password-recovery, and navigation destinations.
 
 ## High-priority improvements
 
@@ -38,7 +43,7 @@ This document summarizes the security features currently present in the applicat
   - [ ] Add rate limiting for failed login attempts.
   - [ ] Consider progressive delays or temporary account throttling.
   - [ ] Track limits by account and source address where appropriate.
-  - [ ] Avoid account lockout rules that enable denial-of-service attacks.
+  - [ ] Avoid account-lockout rules that enable denial-of-service attacks.
   - [ ] Consider MFA for administrator accounts.
 
 - [ ] **Harden session cookies and enforce HTTPS.**
@@ -49,18 +54,12 @@ This document summarizes the security features currently present in the applicat
   - [ ] Configure reasonable session and idle-expiry lifetimes.
   - [ ] Continue regenerating session IDs after privilege changes and authentication transitions.
 
-## Recommended improvements
-
-- [ ] **Add CSRF protection for state-changing requests.**
-  - [ ] Change logout from a GET link to a POST request.
-  - [ ] Add a CSRF token to logout and all future authenticated write operations.
-  - [ ] Validate the CSRF token on the server for every state change.
-
-- [ ] **Implement password recovery securely.**
+- [ ] **Complete secure password recovery.**
   - [ ] Use single-use, randomly generated recovery tokens.
   - [ ] Set a short expiry time for recovery tokens.
-  - [ ] Use the same response regardless of whether an account exists.
+  - [ ] Return the same response regardless of whether an account exists.
   - [ ] Invalidate recovery tokens after use or password change.
+  - [ ] Implement the missing password-recovery interface and workflow.
 
 - [ ] **Strengthen server-side registration validation.**
   - [ ] Enforce username and password length limits.
@@ -68,23 +67,60 @@ This document summarizes the security features currently present in the applicat
   - [ ] Normalize and validate usernames consistently.
   - [ ] Ensure usernames have a unique database constraint to handle concurrent registrations safely.
 
-- [ ] **Improve authentication-log privacy and retention.**
+- [ ] **Protect state-changing requests with CSRF prevention.**
+  - [ ] Change logout from a GET link to a POST request.
+  - [ ] Add a CSRF token to logout and all future authenticated write operations.
+  - [ ] Validate CSRF tokens on the server for every state change.
+
+## Recommended improvements
+
+- [ ] Improve authentication-log privacy and retention.
   - [ ] Restrict access to authentication logs.
   - [ ] Define retention and deletion policies for authentication events.
-  - [ ] Avoid storing unnecessary IP address or user-agent data when not required.
-  - [ ] Document or justify any personal data collected in login logs.
+  - [ ] Avoid unnecessary IP address and user-agent data where it is not required.
+  - [ ] Document and justify any personal data collected in login logs.
 
-- [ ] **Add security headers.**
+- [ ] Add security headers.
   - [ ] Add a Content Security Policy.
   - [ ] Configure appropriate `X-Content-Type-Options`, frame protection, referrer policy, and permissions policy headers.
-  - [ ] Verify headers are present in the hosting environment and remain strict enough to avoid known application behavior from being blocked.
+  - [ ] Verify headers in the hosting environment and avoid policies that unnecessarily block required application behaviour.
+
+- [ ] Complete the profile and dashboard implementation.
+  - [ ] Replace static example statistics, deadlines, and activity in `profile.html` with real application data or clearly label prototype content.
+  - [ ] Resolve inconsistencies between `main.php`, `profile.html`, and database-backed statistics.
+  - [ ] Make dashboard controls perform their advertised actions.
+
+- [ ] Complete unfinished user-facing features.
+  - [ ] Implement or remove unfinished controls in `main.php`.
+  - [ ] Implement `user-management.html` and `user-management.php` or clearly remove them from the navigation.
+  - [ ] Implement the missing password-recovery interface.
+  - [ ] Ensure every visible link, button, and form works or is clearly marked as outside the current scope.
+
+- [ ] Improve testing and accessibility.
+  - [ ] Test registration, login, logout, protected pages, profile loading, statistics, and admin access.
+  - [ ] Test both administrator and regular-user authorization paths.
+  - [ ] Check mobile layouts, keyboard navigation, focus states, labels, error messages, and colour contrast.
+  - [ ] Remove placeholder imagery and replace generic copy with consistent, relevant content.
+
+- [ ] Improve maintainability and repository hygiene.
+  - [ ] Remove empty or unused files and dead code.
+  - [ ] Standardise file paths and naming.
+  - [ ] Remove debugging `console.log()` calls and other development output.
+  - [ ] Document setup, database configuration, required PHP extensions, and deployment steps.
+
+- [ ] Improve coursework evidence and documentation.
+  - [ ] Explain the user need and requirements.
+  - [ ] Document database structure and design decisions.
+  - [ ] Record implementation decisions and security rationale.
+  - [ ] Include test plans, expected results, actual results, and fixes.
+  - [ ] Include feedback and a clear evaluation against the original goals.
 
 ## Verification after changes
 
-- [ ] Rotate and remove all credentials before performing a new deployment.
+- [ ] Rotate and remove all credentials before a new deployment.
 - [ ] Search Git history for secret names and secret values.
-- [ ] Test login, logout, registration, and password recovery on HTTPS.
-- [ ] Test login throttling and admin authorization.
-- [ ] Test for SQL injection, reflected or stored XSS, CSRF, session fixation, and insecure direct object access.
+- [ ] Test login, logout, registration, password recovery, and protected-page access over HTTPS.
+- [ ] Test login throttling and administrator authorization.
+- [ ] Test for SQL injection, reflected and stored XSS, CSRF, session fixation, insecure direct object access, and information disclosure.
 - [ ] Confirm error responses do not disclose stack traces, paths, SQL, or database information.
-- [ ] Confirm authentication logs exclude or protect sensitive information.
+- [ ] Confirm authentication logs exclude or protect sensitive session and personal data.
