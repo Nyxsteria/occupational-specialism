@@ -1,195 +1,182 @@
 <?php
+declare(strict_types=1);
 
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', '0');
 
-// Start session
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store, private');
 
-session_start();
+function respond(int $status, array $body): never
+{
+    http_response_code($status);
+    echo json_encode($body, JSON_INVALID_UTF8_SUBSTITUTE);
+    exit;
+}
 
-// Return JSON responses
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    header('Allow: POST');
+    respond(405, ['success' => false, 'message' => 'Invalid request.']);
+}
 
-header('Content-Type: application/json');
+$username = $_POST['username'] ?? '';
+$password = $_POST['password'] ?? '';
+if (!is_string($username) || !is_string($password)) {
+    respond(400, ['success' => false, 'message' => 'Invalid username or password.']);
+}
+$username = trim($username);
+// Do not trim passwords: whitespace may be part of a user's password.
+if ($username === '' || $password === '' || strlen($username) > 255 || strlen($password) > 4096) {
+    respond(400, ['success' => false, 'message' => 'Invalid username or password.']);
+}
 
-// Database connection
+// Only use REMOTE_ADDR. Forwarded headers are client-controlled unless a trusted
+// reverse proxy is explicitly configured, and must not be trusted by default.
+$ipAddress = substr((string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown'), 0, 45);
+$userAgent = substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 1000);
+$windowSeconds = 15 * 60;
+$pairLimit = 5;
+$ipLimit = 30;
 
-require 'db.php';
+try {
+    require __DIR__ . '/db.php';
 
-// Retrieve submitted login credentials
+    // Count only completed credential failures, not throttled requests. This
+    // lets the window expire naturally even if a client keeps retrying.
+    $failureCount = static function (PDO $pdo, string $where, array $params): array {
+        $query = $pdo->prepare(
+            "SELECT COUNT(*) AS failures, MIN(event_timestamp) AS oldest_failure
+             FROM authentication_events
+             WHERE event_type IN ('LOGIN_INCORRECT', 'LOGIN_FAILED')
+               AND event_timestamp >= (NOW() - INTERVAL 15 MINUTE)
+               AND {$where}"
+        );
+        $query->execute($params);
+        $result = $query->fetch(PDO::FETCH_ASSOC) ?: [];
+        return [
+            'count' => (int) ($result['failures'] ?? 0),
+            'oldest' => $result['oldest_failure'] ?? null,
+        ];
+    };
 
-$username = trim($_POST['username'] ?? '');
-$password = trim($_POST['password'] ?? '');
+    $pairFailures = $failureCount(
+        $pdo,
+        'username_attempted = ? AND ip_address = ?',
+        [$username, $ipAddress]
+    );
+    $ipFailures = $failureCount($pdo, 'ip_address = ?', [$ipAddress]);
 
-// Find matching user account
+    $throttle = static function (array $failures, int $limit, int $windowSeconds): int {
+        if ($failures['count'] < $limit || !$failures['oldest']) {
+            return 0;
+        }
+        $oldest = strtotime((string) $failures['oldest']);
+        return max(1, $oldest + $windowSeconds - time());
+    };
 
-$stmt = $pdo->prepare(
-    "SELECT * FROM users WHERE username = ?"
-);
+    $retryAfter = max(
+        $throttle($pairFailures, $pairLimit, $windowSeconds),
+        $throttle($ipFailures, $ipLimit, $windowSeconds)
+    );
 
-$stmt->execute([$username]);
+    $stmt = $pdo->prepare('SELECT id, username, password, role FROM users WHERE username = ? LIMIT 1');
+    $stmt->execute([$username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $writeEvent = static function (
+        PDO $pdo,
+        ?int $userId,
+        string $eventType,
+        string $username,
+        string $ipAddress,
+        string $userAgent,
+        ?string $failureReason = null,
+        ?string $sessionIdentifier = null
+    ): void {
+        $log = $pdo->prepare(
+            'INSERT INTO authentication_events (
+                user_id, event_type, username_attempted, ip_address,
+                user_agent, session_identifier, failure_reason
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+        $log->execute([
+            $userId,
+            $eventType,
+            $username,
+            $ipAddress,
+            $userAgent,
+            $sessionIdentifier,
+            $failureReason,
+        ]);
+    };
 
-// User account found
+    // Apply limits to the account+source-address pair and to the source address
+    // across accounts. There is deliberately no account-only lockout: someone
+    // cannot block a victim simply by repeatedly submitting the victim's name.
+    if ($retryAfter > 0) {
+        $writeEvent(
+            $pdo,
+            $user ? (int) $user['id'] : null,
+            'LOGIN_THROTTLED',
+            $username,
+            $ipAddress,
+            $userAgent,
+            'RATE_LIMITED'
+        );
+        header('Retry-After: ' . $retryAfter);
+        respond(429, [
+            'success' => false,
+            'message' => 'Too many unsuccessful attempts. Please try again later.',
+            'retry_after' => $retryAfter,
+        ]);
+    }
 
-if ($user) {
-
-    // Validate password
-
-    if (password_verify($password, $user['password'])) {
-
-        // Generate new session ID
-
+    if ($user && password_verify($password, (string) $user['password'])) {
+        session_start();
         session_regenerate_id(true);
 
-        // Store user session
-
         $_SESSION['logged_in'] = true;
-        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_id'] = (int) $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
 
-        // Create hashed session identifier for audit trail
-
-        $sessionIdentifier =
-            hash('sha256', session_id());
-
-        // Log successful login
-
-        $log = $pdo->prepare("
-            INSERT INTO authentication_events (
-                user_id,
-                event_type,
-                username_attempted,
-                ip_address,
-                user_agent,
-                session_identifier
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
-
-        $log->execute([
-
-            $user['id'],
-
+        $sessionIdentifier = hash('sha256', session_id());
+        $writeEvent(
+            $pdo,
+            (int) $user['id'],
             'LOGIN_SUCCESS',
-
             $username,
-
-            $_SERVER['REMOTE_ADDR'],
-
-            $_SERVER['HTTP_USER_AGENT'],
-
-            $sessionIdentifier
-
-        ]);
-
-        // Return success response
-
-        echo json_encode([
-
-            'success' => true,
-
-            'message' => 'Login successful.',
-
-            'username' => $user['username']
-
-        ]);
-
-    } else {
-
-        // Log incorrect password
-
-        $log = $pdo->prepare("
-            INSERT INTO authentication_events (
-                user_id,
-                event_type,
-                username_attempted,
-                ip_address,
-                user_agent,
-                session_identifier,
-                failure_reason
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
-
-        $log->execute([
-
-            $user['id'],
-
-            'LOGIN_INCORRECT',
-
-            $username,
-
-            $_SERVER['REMOTE_ADDR'],
-
-            $_SERVER['HTTP_USER_AGENT'],
-
+            $ipAddress,
+            $userAgent,
             null,
+            $sessionIdentifier
+        );
 
-            'INVALID_PASSWORD'
-
+        respond(200, [
+            'success' => true,
+            'message' => 'Login successful.',
+            'username' => $user['username'],
         ]);
-
-        // Return failed response
-
-        echo json_encode([
-
-            'success' => false,
-
-            'message' => 'Username or password is incorrect.'
-
-        ]);
-
     }
 
-}
-
-// User account not found
-
-else {
-
-    // Log failed login attempt
-
-    $log = $pdo->prepare("
-        INSERT INTO authentication_events (
-            user_id,
-            event_type,
-            username_attempted,
-            ip_address,
-            user_agent,
-            session_identifier,
-            failure_reason
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ");
-
-    $log->execute([
-
-        null,
-
-        'LOGIN_FAILED',
-
+    $writeEvent(
+        $pdo,
+        $user ? (int) $user['id'] : null,
+        $user ? 'LOGIN_INCORRECT' : 'LOGIN_FAILED',
         $username,
+        $ipAddress,
+        $userAgent,
+        $user ? 'INVALID_PASSWORD' : 'ACCOUNT_NOT_FOUND'
+    );
 
-        $_SERVER['REMOTE_ADDR'],
-
-        $_SERVER['HTTP_USER_AGENT'],
-
-        null,
-
-        'ACCOUNT_NOT_FOUND'
-
-    ]);
-
-    // Return failed response
-
-    echo json_encode([
-
+    respond(401, [
         'success' => false,
-
-        'message' => 'Username or password is incorrect.'
-
+        'message' => 'Username or password is incorrect.',
     ]);
-
+} catch (Throwable $e) {
+    error_log('Login request failed: ' . $e->getMessage());
+    respond(500, [
+        'success' => false,
+        'message' => 'Unable to sign in right now. Please try again later.',
+    ]);
 }

@@ -14,6 +14,7 @@ This document summarizes the security features currently present in the applicat
 - [x] Use generic failure messages for failed login attempts.
 - [x] Set `no-store` cache headers on the new admin and profile JSON endpoints.
 - [x] Store a hash of the session identifier in authentication logs rather than the raw session ID.
+- [x] Apply rolling-window login throttles to username/source-IP pairs and source IPs, without account-only lockouts; see `LOGIN_SECURITY.md`.
 
 ## Critical improvements
 
@@ -39,12 +40,12 @@ This document summarizes the security features currently present in the applicat
 
 ## High-priority improvements
 
-- [ ] **Add login abuse controls.**
-  - [ ] Add rate limiting for failed login attempts.
-  - [ ] Consider progressive delays or temporary account throttling.
-  - [ ] Track limits by account and source address where appropriate.
-  - [ ] Avoid account-lockout rules that enable denial-of-service attacks.
-  - [ ] Consider MFA for administrator accounts.
+- [x] **Add login abuse controls.**
+  - [x] Add rate limiting for failed login attempts.
+  - [x] Temporarily throttle repeated attempts using rolling 15-minute windows and a `Retry-After` response.
+  - [x] Track by username/source-IP pair and by source IP across accounts.
+  - [x] Avoid account-only lockouts that enable denial-of-service attacks.
+  - [ ] Consider MFA for administrator accounts; this requires a separate enrollment, verification, and recovery flow.
 
 - [ ] **Harden session cookies and enforce HTTPS.**
   - [ ] Set the session cookie to `Secure` in production.
@@ -120,7 +121,7 @@ This document summarizes the security features currently present in the applicat
 - [ ] Rotate and remove all credentials before a new deployment.
 - [ ] Search Git history for secret names and secret values.
 - [ ] Test login, logout, registration, password recovery, and protected-page access over HTTPS.
-- [ ] Test login throttling and administrator authorization.
+- [ ] Test login throttling and administrator authorization (manual throttle cases are documented in `LOGIN_SECURITY.md`).
 - [ ] Test for SQL injection, reflected and stored XSS, CSRF, session fixation, insecure direct object access, and information disclosure.
 - [ ] Confirm error responses do not disclose stack traces, paths, SQL, or database information.
 - [ ] Confirm authentication logs exclude or protect sensitive session and personal data.
