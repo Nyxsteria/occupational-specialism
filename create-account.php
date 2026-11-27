@@ -1,14 +1,21 @@
 <?php
+declare(strict_types=1);
 
 // In production, log errors instead of displaying them to visitors.
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
-
-require_once('./session.php');
+require_once __DIR__ . '/session.php';
 header('Content-Type: application/json; charset=utf-8');
 
-require './db.php';
+require __DIR__ . '/db.php';
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    echo json_encode(['success' => false, 'message' => 'Invalid request.']);
+    exit;
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -35,7 +42,6 @@ if (!is_string($username) || !is_string($password)) {
 
 $username = trim($username);
 
-// Don't trim the password: spaces may be part of it.
 if ($username === '' || $password === '') {
     http_response_code(400);
     echo json_encode([
@@ -45,25 +51,66 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id FROM users WHERE username = ?');
-$stmt->execute([$username]);
-
-if ($stmt->fetch()) {
+if (
+    strlen($username) < 3 ||
+    strlen($username) > 32 ||
+    !preg_match('/\A[a-zA-Z0-9_]+\z/', $username)
+) {
+    http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => 'A user with this username already exists.'
+        'message' => 'Username must be 3–32 characters using letters, numbers, or underscores.'
     ]);
     exit;
 }
 
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+if (strlen($password) < 12 || strlen($password) > 4096) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Password must be 12–4096 characters.'
+    ]);
+    exit;
+}
 
-$stmt = $pdo->prepare(
-    'INSERT INTO users (username, password) VALUES (?, ?)'
-);
-$stmt->execute([$username, $hashedPassword]);
+try {
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ?');
+    $stmt->execute([$username]);
 
-// Only look up the user and create a logged-in session after insertion.
+    if ($stmt->fetch()) {
+        http_response_code(409);
+        echo json_encode([
+            'success' => false,
+            'message' => 'A user with this username already exists.'
+        ]);
+        exit;
+    }
+
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO users (username, password) VALUES (?, ?)'
+    );
+    $stmt->execute([$username, $hashedPassword]);
+} catch (PDOException $exception) {
+    if ((int) $exception->getCode() === 23000) {
+        http_response_code(409);
+        echo json_encode([
+            'success' => false,
+            'message' => 'A user with this username already exists.'
+        ]);
+        exit;
+    }
+
+    error_log('Account creation failed: ' . $exception->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unable to create account right now.'
+    ]);
+    exit;
+}
+
 $insertedId = (int) $pdo->lastInsertId();
 
 $stmt = $pdo->prepare(

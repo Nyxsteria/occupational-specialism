@@ -7,6 +7,8 @@ ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, private');
 
+require_once __DIR__ . '/session.php';
+
 // Send a JSON response with the chosen HTTP status, then stop processing the request.
 function respond(int $status, array $body): never
 {
@@ -40,10 +42,9 @@ $pairLimit = 5;
 $ipLimit = 30;
 
 try {
-    require './db.php';
+    require __DIR__ . '/db.php';
 
     // Count recent credential failures matching the supplied account/IP filter.
-    // Throttled requests are excluded so repeated retries cannot extend the window.
     $failureCount = static function (PDO $pdo, string $where, array $params): array {
         $query = $pdo->prepare(
             "SELECT COUNT(*) AS failures, MIN(event_timestamp) AS oldest_failure
@@ -67,7 +68,6 @@ try {
     );
     $ipFailures = $failureCount($pdo, 'ip_address = ?', [$ipAddress]);
 
-    // Calculate remaining wait time when a failure count reaches its limit.
     $throttle = static function (array $failures, int $limit, int $windowSeconds): int {
         if ($failures['count'] < $limit || !$failures['oldest']) {
             return 0;
@@ -85,7 +85,6 @@ try {
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Save a login event so successful, failed, and throttled attempts are auditable.
     $writeEvent = static function (
         PDO $pdo,
         ?int $userId,
@@ -113,9 +112,6 @@ try {
         ]);
     };
 
-    // Apply limits to the account+source-address pair and to the source address
-    // across accounts. There is deliberately no account-only lockout: someone
-    // cannot block a victim simply by repeatedly submitting the victim's name.
     if ($retryAfter > 0) {
         $writeEvent(
             $pdo,
@@ -135,7 +131,6 @@ try {
     }
 
     if ($user && password_verify($password, (string) $user['password'])) {
-        session_start();
         session_regenerate_id(true);
 
         $_SESSION['logged_in'] = true;

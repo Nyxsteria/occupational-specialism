@@ -1,78 +1,78 @@
 <?php
 
+declare(strict_types=1);
 
-require_once('./session.php');
+require_once __DIR__ . '/session.php';
 
-require './db.php';
-
-// Log logout event if user is authenticated
-
-if (isset($_SESSION['user_id'])) {
-
-    // Create hashed session identifier
-
-    $sessionIdentifier =
-        hash('sha256', session_id());
-
-    // Log logout event
-
-    $log = $pdo->prepare("
-        INSERT INTO authentication_events (
-            user_id,
-            event_type,
-            username_attempted,
-            ip_address,
-            user_agent,
-            session_identifier
-        )
-        VALUES (?, ?, ?, ?, ?, ?)
-    ");
-
-    $log->execute([
-
-        $_SESSION['user_id'],
-
-        'LOGOUT',
-
-        $_SESSION['username'],
-
-        $_SERVER['REMOTE_ADDR'],
-
-        $_SERVER['HTTP_USER_AGENT'],
-
-        $sessionIdentifier
-
-    ]);
-
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    header('Allow: POST');
+    http_response_code(405);
+    exit('Method not allowed.');
 }
 
-// Remove all session variables
+$submittedToken = $_POST['csrf_token'] ?? '';
+$sessionToken = $_SESSION['csrf_token'] ?? '';
+
+if (
+    !is_string($submittedToken) ||
+    !is_string($sessionToken) ||
+    $sessionToken === '' ||
+    !hash_equals($sessionToken, $submittedToken)
+) {
+    http_response_code(403);
+    exit('Invalid request.');
+}
+
+try {
+    require __DIR__ . '/db.php';
+
+    if (isset($_SESSION['user_id'])) {
+        $sessionIdentifier = hash('sha256', session_id());
+
+        $log = $pdo->prepare(
+            'INSERT INTO authentication_events (
+                user_id,
+                event_type,
+                username_attempted,
+                ip_address,
+                user_agent,
+                session_identifier
+             ) VALUES (?, ?, ?, ?, ?, ?)'
+        );
+
+        $log->execute([
+            $_SESSION['user_id'],
+            'LOGOUT',
+            $_SESSION['username'] ?? '',
+            $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            $_SERVER['HTTP_USER_AGENT'] ?? '',
+            $sessionIdentifier,
+        ]);
+    }
+} catch (Throwable $e) {
+    error_log('Logout event failed: ' . $e->getMessage());
+}
 
 $_SESSION = [];
 
-// Remove the PHP session cookie
-
 if (ini_get('session.use_cookies')) {
-
     $params = session_get_cookie_params();
 
     setcookie(
         session_name(),
         '',
-        time() - 42000,
-        $params['path'],
-        $params['domain'],
-        $params['secure'],
-        $params['httponly']
+        [
+            'expires' => time() - 42000,
+            'path' => $params['path'],
+            'domain' => $params['domain'],
+            'secure' => $params['secure'],
+            'httponly' => $params['httponly'],
+            'samesite' => 'Lax',
+        ]
     );
-
 }
-
-// Destroy server-side session
 
 session_destroy();
 
-// Redirect user back to login page
-
-header("Location: login.html");
+header('Location: login.html');
 exit();
