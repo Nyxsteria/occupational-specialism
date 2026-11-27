@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-
+    // Find the login form after the page loads and set up its submit handling.
     const loginForm = document.getElementById('login-form');
 
     if (!loginForm) {
@@ -7,14 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Send credentials to login.php and show either the success or failure response.
     loginForm.addEventListener('submit', async (event) => {
-
         event.preventDefault();
 
         const formData = new FormData(loginForm);
 
         try {
-
             const response = await fetch('login.php', {
                 method: 'POST',
                 body: formData
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('popup-button');
 
             if (result.success) {
-
                 popup.classList.remove('hidden');
 
                 popup.querySelector('.popup-content')
@@ -52,17 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.style.display =
                     'none';
 
+                // Continue to the dashboard after the success message is visible.
                 setTimeout(() => {
-
                     window.location.href =
                         'main.php';
-
                 }, 1500);
-
-            
-
             } else {
-
                 popup.classList.remove('hidden');
 
                 popup.querySelector('.popup-content')
@@ -81,16 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.textContent =
                     'Try Again';
 
+                // Hide the failed-login message so the user can retry.
                 button.onclick = () => {
-
                     popup.classList.add('hidden');
-
                 };
-
             }
-
         } catch (error) {
-
             console.error('Login Error:', error);
 
             const popup =
@@ -122,14 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
             button.textContent =
                 'Close';
 
+            // Dismiss the message when the server request could not be completed.
             button.onclick = () => {
-
                 popup.classList.add('hidden');
-
             };
-
         }
-
     });
-
 });

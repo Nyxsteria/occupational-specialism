@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // Fetch the signed-in user's profile after the page has loaded.
     try {
         const response = await fetch('profile.php', {
             credentials: 'same-origin',

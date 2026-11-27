@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-
+    // Find the account form once the page is ready and attach its submit handler.
     const form =
         document.getElementById("create-account-form");
 
+    // Send the entered account details to the server and display its response.
     form.addEventListener("submit", async (e) => {
-
         e.preventDefault();
 
         console.log("SUBMIT INTERCEPTED");
@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("password").value;
 
         try {
-
             const response = await fetch(
                 "create-account.php",
                 {
@@ -46,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("popup-button");
 
             if (result.success) {
-
                 popup.classList.remove("hidden");
 
                 title.textContent =
@@ -59,14 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 button.style.display = "none";
 
+                // Redirect to the signed-in page after showing the success message.
                 setTimeout(() => {
-
                     window.location.href =
                         'main.php'
                 }, 2000);
-
             } else {
-
                 popup.classList.remove("hidden");
 
                 title.textContent =
@@ -81,20 +77,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.textContent =
                     "Close";
 
+                // Let the user dismiss the account-creation error popup.
                 button.onclick = () => {
-
                     popup.classList.add("hidden");
-
                 };
-
             }
-
         } catch (error) {
-
             console.error(error);
-
         }
-
     });
-
 });

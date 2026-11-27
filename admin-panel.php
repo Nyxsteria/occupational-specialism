@@ -56,6 +56,7 @@ try {
     exit('Unable to load login activity. Check the server error log.');
 }
 
+// Escape log values before placing them into HTML, preventing injected markup from running.
 function escapeHtml(?string $value): string
 {
     return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
