@@ -1,6 +1,7 @@
 <?php
 
-session_start();
+
+require_once('./session.php');
 
 // Send logged-in users to the main page.
 if (

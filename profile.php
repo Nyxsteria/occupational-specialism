@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-session_start();
+
+require_once('./session.php');
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, private');
@@ -25,7 +26,7 @@ if (
 }
 
 try {
-    require_once __DIR__ . '/db.php';
+    require_once './db.php';
 
     $stmt = $pdo->prepare(
         'SELECT username FROM users WHERE id = :id'

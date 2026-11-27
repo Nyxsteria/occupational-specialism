@@ -4,10 +4,11 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
-session_start();
+
+require_once('./session.php');
 header('Content-Type: application/json; charset=utf-8');
 
-require __DIR__ . '/db.php';
+require './db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 

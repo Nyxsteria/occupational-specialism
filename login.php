@@ -40,7 +40,7 @@ $pairLimit = 5;
 $ipLimit = 30;
 
 try {
-    require __DIR__ . '/db.php';
+    require './db.php';
 
     // Count recent credential failures matching the supplied account/IP filter.
     // Throttled requests are excluded so repeated retries cannot extend the window.

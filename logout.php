@@ -1,8 +1,9 @@
 <?php
 
-session_start();
 
-require 'db.php';
+require_once('./session.php');
+
+require './db.php';
 
 // Log logout event if user is authenticated
 

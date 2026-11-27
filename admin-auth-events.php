@@ -4,7 +4,7 @@ declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, private');
 
-session_start();
+require_once('./session.php');
 
 $userId = filter_var($_SESSION['user_id'] ?? null, FILTER_VALIDATE_INT);
 if (($_SESSION['logged_in'] ?? false) !== true || !$userId) {

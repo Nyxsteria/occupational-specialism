@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-session_start();
+
+require_once('./session.php');
 
 $userId = filter_var($_SESSION['user_id'] ?? null, FILTER_VALIDATE_INT);
 if (($_SESSION['logged_in'] ?? false) !== true || !$userId) {
@@ -11,7 +12,7 @@ if (($_SESSION['logged_in'] ?? false) !== true || !$userId) {
 
 try {
     // db.php is the project's existing PDO bootstrap.
-    require_once __DIR__ . '/db.php';
+    require_once './db.php';
 
     // Read the current role from the database, so revoked admin access takes effect.
     $roleQuery = $pdo->prepare('SELECT role FROM users WHERE id = :id');
